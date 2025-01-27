@@ -5,7 +5,7 @@ We conducted a speed-run on to investigate R1's paradigm in multimodal models af
 <!-- [Dataset](https://huggingface.co/datasets/lmms-lab/multimodal-open-r1-8k-verified) | [2B Model](https://huggingface.co/lmms-lab/Qwen2-VL-2B-GRPO-8k) | [7B Model](https://huggingface.co/lmms-lab/Qwen2-VL-7B-GRPO-8k) -->
 
 > [!NOTE] 
-> While we are familiar with multimodal model implementation, we are new to the RL domain. Although our insights may not be guaranteed to be correct, we commit to sharing them truthfully and honestly. We welcome community feedback and discussions to improve our understanding on multimodal reasoning models. We will PR to `open-r1` later to better support community study on multimodal RL.
+> Although our insights may not be guaranteed to be correct, we commit to sharing them truthfully and honestly. We welcome community feedback and discussions to improve our understanding on multimodal reasoning models. We will PR to `open-r1` later to better support community study on multimodal RL.
 
 ## What We Did and Insights
 
