@@ -1,6 +1,6 @@
 # Multimodal Open R1
 
-We conducted a speed-run on Sunday after observing growing interest in R1 and studying the elegant implementation of the GRPO algorithm in `open-r1` and `trl`. They paused their ongoing projects to explore R1 in the multimodal domain.
+We conducted a speed-run on to investigate R1's paradigm in multimodal models after observing growing interest in R1 and studying the elegant implementation of the GRPO algorithm in `open-r1` and `trl`. They paused their ongoing projects to explore R1 in the multimodal domain.
 
 <!-- [Dataset](https://huggingface.co/datasets/lmms-lab/multimodal-open-r1-8k-verified) | [2B Model](https://huggingface.co/lmms-lab/Qwen2-VL-2B-GRPO-8k) | [7B Model](https://huggingface.co/lmms-lab/Qwen2-VL-7B-GRPO-8k) -->
 
