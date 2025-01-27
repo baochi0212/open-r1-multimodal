@@ -32,7 +32,7 @@ We conducted a speed-run on to investigate R1's paradigm in multimodal models af
 
 ### GRPO on Qwen2-VL-2/7B
 
-To run GRPO on Qwen2-VL-2B, run:
+To run GRPO on Qwen2-VL-2B:
 
 ```
 cd /home/tiger/multimodal-open-r1
