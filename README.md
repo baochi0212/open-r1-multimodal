@@ -7,8 +7,6 @@ We conducted a speed-run on to investigate R1's paradigm in multimodal models af
 > [!NOTE] 
 > Although our insights may not be guaranteed to be correct, we commit to sharing them truthfully and honestly. We welcome community feedback and discussions to improve our understanding on multimodal reasoning models. We will PR to `open-r1` later to better support community study on multimodal RL.
 
-## What We Did and Insights
-
 ![alt text](assets/lmm_r1.png)
 
 **What We Did**
