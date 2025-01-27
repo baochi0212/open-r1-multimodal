@@ -1,13 +1,11 @@
 # Multimodal Open R1
 
-We conducted a speed-run on to investigate R1's paradigm in multimodal models after observing growing interest in R1 and studying the elegant implementation of the GRPO algorithm in `open-r1` and `trl`. They paused their ongoing projects to explore R1 in the multimodal domain.
+We conducted a speed-run on to investigate R1's paradigm in multimodal models after observing growing interest in R1 and studying the elegant implementation of the GRPO algorithm in `open-r1` and `trl`.
 
 [🤗 Models](https://huggingface.co/lmms-lab/Qwen2-VL-2B-GRPO-8k) | [🤗 Datasets](https://huggingface.co/datasets/lmms-lab/multimodal-open-r1-8k-verified) | [Wandb Logs](https://api.wandb.ai/links/libo0013/lz60ml8h)
 
 > [!NOTE] 
 > Although our insights may not be guaranteed to be correct, we commit to sharing them truthfully and honestly. We welcome community feedback and discussions to improve our understanding on multimodal reasoning models. We will PR to `open-r1` later to better support community study on multimodal RL.
-
-## What We Did and Insights
 
 ![alt text](assets/lmm_r1.png)
 
@@ -16,14 +14,17 @@ We conducted a speed-run on to investigate R1's paradigm in multimodal models af
   - Integrated Qwen2-VL series, Aria-MoE, and other VLMs available in `transformers`.
 - Open-sourced the first batch of `8k` multimodal RL training examples focused on Math reasoning. The data is created by GPT4o with reasoning paths and verifiable answers, based on `Math360K` and `Geo170K`. We provide a [script](local_scripts/create_vision_cot_data.py) for users to inspect and create their own data.
   - The dataset is available in [lmms-lab/multimodal-open-r1-8k-verified](https://huggingface.co/datasets/lmms-lab/multimodal-open-r1-8k-verified).
-- Open-sourced models trained with GRPO on `8k` examples.
-  - [lmms-lab/Qwen2-VL-2B-GRPO-8k](https://huggingface.co/lmms-lab/Qwen2-VL-2B-GRPO-8k) | [lmms-lab/Qwen2-VL-7B-GRPO-8k](https://huggingface.co/lmms-lab/Qwen2-VL-7B-GRPO-8k).
+- Open-sourced models trained with GRPO.
+  - The models are available in [lmms-lab/Qwen2-VL-2B-GRPO-8k](https://huggingface.co/lmms-lab/Qwen2-VL-2B-GRPO-8k) | [lmms-lab/Qwen2-VL-7B-GRPO-8k](https://huggingface.co/lmms-lab/Qwen2-VL-7B-GRPO-8k).
 
 **Insights and Future Plans**
 - Multiple-choice option verification is necessary since many math multimodal problems are MCQs. Discussed in [issue#56](https://github.com/huggingface/open-r1/issues/56) and we customize the verification logic in [src/open_r1/grpo.py](src/open_r1/grpo.py).
 - Need to curate RL data to be verifiable, requiring further exploration on effectively converting existing data into RL data and validating GPT4o's curation reliability.
 - Current framework is not efficient for large-scale training. Qwen2-VL-2B model takes `10 hours` to train `1 epoch` on `8 H100 GPUs` for `8k samples`. So it's necessary to investigate how to efficiently scale up the training.
 - Our init model (Qwen2-VL-2/7B-Instruct) do not show good reasoning ability in our experiments, and during training, the model quickly gather rewards from `format` but not `accuracy`, which is not a good sign for whole RL training. We release our [wandb logs](https://api.wandb.ai/links/libo0013/lz60ml8h) for reference.
+
+  ![image](https://github.com/user-attachments/assets/e0cfca59-3403-4776-97e9-090f2972b903)
+
 - The community may need to curate better multimodal dataset for RL training. Current dataset is limited to math scenarios since it has verifiable answers. It's unclear how to expand the RL dataset to other general domains with open-ended answer. We welcome community feedback on our current strategy and plan to release a larger dataset if we get clear scaling insights through community discussions.
 
 
@@ -34,7 +35,7 @@ We conducted a speed-run on to investigate R1's paradigm in multimodal models af
 
 ### GRPO on Qwen2-VL-2/7B
 
-To run GRPO on Qwen2-VL-2B, run:
+To run GRPO on Qwen2-VL-2B:
 
 ```
 cd /home/tiger/multimodal-open-r1
