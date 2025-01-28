@@ -72,6 +72,19 @@ Please refer to [local_scripts/train_qwen2_vl.sh](local_scripts/train_qwen2_vl.s
 
 Above scripts are naively for `multi-gpu/multi-node` training.
 
+### Reasoning matters for evaluation
+
+Many benchmarks, such as MMMU and AI2D, require the model to directly output an answer without providing reasoning steps. This raises a critical issue for evaluation: does the model truly understand how to derive the answer or is it just guessing or relying on memorization? To address this, we require the model to first generate its reasoning steps before providing the final answer. We then use GPT-4o to extract and score the responses.
+
+We tested the original Qwen2-VL-2B-Instruct and Qwen2-VL-7B-Instruct models and observed that their scores decreased on certain benchmarks when reasoning steps were included. Subsequently, we compared the scores of our model using the same evaluation method. Our model performed better under the reasoning-based chain-of-thought (CoT) setting. We attribute this improvement to our model’s training on GRPO, which appears to enhance its ability to handle reasoning formats and consequently achieve higher scores.
+
+| Benchmarks     | Qwen2-VL-2B-Instruct(w.o reasoning) | Qwen2-VL-2B-Instruct(w. reasoning) | Qwen2-VL-2B-GRPO-8k(w. reasoning) | Qwen2-VL-7B-Instruct(w.o reasoning) | Qwen2-VL-7B-Instruct(w. reasoning) | Qwen2-VL-7B-GRPO-8k(w. reasoning) |
+|----------------|-------------------------------------|------------------------------------|-----------------------------------|-------------------------------------|------------------------------------|-----------------------------------|
+| MMMU           | 39.7                                | 31.2                               | 35.22                             | 50.8                                | 41.9                               | 49.4                              |
+| Mathvista-mini | 51.6                                | 48.6                               | 49.4                              | 57.1                                | 60.9                               | 60.6                              |
+
+In our logs, we sometimes find out that the model still just outputing the answer with our the reasoning steps (even for our trained models). We believe that this could because the model are not familiar with the reasoning steps and can't decide how to generate it.
+
 ### Evaluating models
 
 We use [lmms-eval]([https://github.com/LMMs-Lab/lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval)) to evaluate models, please run:
@@ -79,6 +92,8 @@ We use [lmms-eval]([https://github.com/LMMs-Lab/lmms-eval](https://github.com/Ev
 ```shell
 bash local_scripts/lmms_eval_qwen2vl.sh
 ```
+
+To reproduce our result on the above benchmarks, please checkout to the `dev/qwen_cot` branch.
 
 Visual reasoning task evaluation currently are limited in direct answer format and simple parsing logic. Tasks like `mmmu_val`, `mathvista_testmini`, and `mmmu_pro` expect direct answers rather than reasoning traces, and the current parsing logic cannot process step-by-step reasoning. We are actively working on improving this limitation and welcome community contributions to develop a more comprehensive evaluation framework for visual reasoning models.
 
