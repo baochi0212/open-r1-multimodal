@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from glob import glob 
 import os
 import re
 from datetime import datetime
@@ -167,9 +167,15 @@ def main(script_args, training_args, model_args):
         max_pixels=script_args.max_pixels,
         min_pixels=script_args.min_pixels,
     )
-
+    # dataloader = trainer.get_train_dataloader()
+    # for _ in dataloader:
+    #     continue
+    
     # Train and push the model to the Hub
-    trainer.train()
+    if len(glob(f"{training_args.output_dir}/checkpoint*")) > 0:
+        trainer.train(resume_from_checkpoint=True)
+    else:
+        trainer.train()
 
     # Save and push to hub
     trainer.save_model(training_args.output_dir)

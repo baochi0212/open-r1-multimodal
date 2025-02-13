@@ -55,7 +55,7 @@ torchrun --nproc_per_node="${ARNOLD_WORKER_GPU}" \
     --report_to wandb \
     --gradient_checkpointing true \
     --attn_implementation flash_attention_2 \
-    --max_pixels 2359296 \
+    --max_pixels 3211264 \
     --save_total_limit 8 \
     --num_train_epochs 1 \
     --run_name $WANDB_RUN_NAME

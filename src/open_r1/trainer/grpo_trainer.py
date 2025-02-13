@@ -39,7 +39,7 @@ from transformers import (
 )
 from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
 from transformers.utils import is_peft_available
-
+import torch.distributed as dist
 from trl.data_utils import apply_chat_template, is_conversational, maybe_apply_chat_template
 from trl.models import create_reference_model, prepare_deepspeed, unwrap_model_for_generation
 from trl.trainer.grpo_config import GRPOConfig
@@ -185,12 +185,14 @@ class Qwen2VLGRPOTrainer(Trainer):
                 False if args.gradient_checkpointing else model_init_kwargs.get("use_cache")
             )
             if "Qwen2-VL" in model_id:
-                model = Qwen2VLForConditionalGeneration.from_pretrained(model, **model_init_kwargs)
+                model = Qwen2VLForConditionalGeneration.from_pretrained(model, 
+                                                                        torch_dtype=torch.bfloat16,
+                                                                        **model_init_kwargs)
             elif "Aria" in model_id:
                 model_init_kwargs.pop("use_cache")
                 model = AriaForConditionalGeneration.from_pretrained(model, **model_init_kwargs)
             else:
-                model = AutoModelForCausalLM.from_pretrained(model, **model_init_kwargs)
+                model = AutoModelForCausalLM.from_pretrained(model, torch_dtype=torch.bfloat16, **model_init_kwargs)
         else:
             model_id = model.config._name_or_path
             if args.model_init_kwargs is not None:
@@ -329,14 +331,37 @@ class Qwen2VLGRPOTrainer(Trainer):
     # Since we preprocess the data in `compute_loss`, we need to override this method to skip this step.
     def _prepare_inputs(self, inputs: dict[str, Union[torch.Tensor, Any]]) -> dict[str, Union[torch.Tensor, Any]]:
         return inputs
-
+    # def training_step(self, model, inputs, *args, **kwargs):
+    #     # if self.state.global_step == 496:
+    #     #     #inputs[0]['image'].convert("RGB").save(f"./debug/{dist.get_rank()}.jpg")
+    #     #     print(f"DEBUG {dist.get_rank()}", self.processing_class(
+    #     #         text=inputs[0]['problem'],
+    #     #         images=[inputs[0]['image']],
+    #     #         return_tensors='pt'
+    #     #     ))
+    #     if self.state.global_step in [495, 496]:
+    #         loss = super().training_step(model, inputs, *args, **kwargs)
+    #     
+    #     #     loss = torch.tensor(0.0).to(model.device)
+    #     else:
+    #         loss = torch.tensor(0.0).to(model.device)
+    #     return loss
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        def smart_resize(image):
+            if image.size[0] < 28*16:
+                image = image.resize((28*16, image.size[1]))
+            elif image.size[1] < 28*16:
+                image = image.resize((image.size[0], 28*16))
+            return image
         if return_outputs:
             raise ValueError("The GRPOTrainer does not support returning outputs")
 
         prompts = [x["prompt"] for x in inputs]
         prompts_text = [maybe_apply_chat_template(example, self.processing_class)["prompt"] for example in inputs]
-        images = [x["image"] for x in inputs]
+        images = [smart_resize(x['image'])  for x in inputs]
+        #print(f"DEBUG at {dist.get_rank()}", images)
+        # if self.state.global_step == 496:
+        #     print("DEBUG: ", inputs)
         prompt_inputs = self.processing_class(
             text=prompts_text,
             images=images,
@@ -345,6 +370,7 @@ class Qwen2VLGRPOTrainer(Trainer):
             padding_side="left",
             add_special_tokens=False,
         )
+ 
         prompt_inputs = super()._prepare_inputs(prompt_inputs)
 
         if self.max_prompt_length is not None:
@@ -510,7 +536,7 @@ class Qwen2VLGRPOTrainer(Trainer):
             """\
             @article{zhihong2024deepseekmath,
                 title        = {{DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models}},
-                author       = {Zhihong Shao and Peiyi Wang and Qihao Zhu and Runxin Xu and Junxiao Song and Mingchuan Zhang and Y. K. Li and Y. Wu and Daya Guo},
+                author       = KingLeoToxic1!{Zhihong Shao and Peiyi Wang and Qihao Zhu and Runxin Xu and Junxiao Song and Mingchuan Zhang and Y. K. Li and Y. Wu and Daya Guo},
                 year         = 2024,
                 eprint       = {arXiv:2402.03300},
             """
